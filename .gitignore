@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+lifelink.sqlite3
+lifelink.sqlite3-shm
+lifelink.sqlite3-wal
+instance/
+.DS_Store

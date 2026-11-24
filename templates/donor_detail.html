@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block title %}Donor profile · LifeLink{% endblock %}{% block content %}
+<main class="section profile-section"><span class="eyebrow">DONOR DIRECTORY</span><h2>Donor profile</h2><section class="profile-card">
+<div class="profile-blood">{{ donor['blood_group'] }}</div><div><h3>{{ donor['name'] }}</h3><p class="muted">LifeLink registered donor</p></div>
+<div class="profile-details"><div><small>Blood group</small><strong>{{ donor['blood_group'] }}</strong></div><div><small>City</small><strong>{{ donor['city'] }}</strong></div><div><small>Availability</small><strong class="available-label">{{ 'Available' if donor['available'] else 'Unavailable' }}</strong></div><div><small>Member since</small><strong>{{ donor['created_at'][:10] }}</strong></div></div>
+<div class="privacy-note">🔒 Private contact information (phone number and email) is not displayed publicly. Contact and medical suitability must be coordinated through a hospital or licensed blood bank.</div>
+</section><div class="actions"><a class="btn primary" href="{{ url_for('donors',blood_group=donor['blood_group'],city=donor['city']) }}">← Back to search results</a><a class="btn light" href="{{ url_for('home') }}">Back to home</a></div></main>{% endblock %}

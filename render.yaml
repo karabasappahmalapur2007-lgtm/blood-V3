@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: lifelink-blood-donor-portal
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --workers 2 --threads 4 --timeout 120
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: RENDER
+        value: "true"
+      - key: LIFELINK_HTTPS
+        value: "1"
+      - key: LIFELINK_DB
+        value: /var/data/lifelink.sqlite3
+      - key: LIFELINK_SECRET_KEY
+        generateValue: true
+    disk:
+      name: lifelink-data
+      mountPath: /var/data
+      sizeGB: 1
