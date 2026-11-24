@@ -214,32 +214,39 @@ def security_headers(response):
 
 @app.before_request
 
+
 def protect_posts():
 
     if request.method == 'POST':
 
         supplied = request.form.get('_csrf', '')
-
         expected = session.get('_csrf', '')
 
-        if not expected or not hmac.compare_digest(supplied, expected): abort(400, 'Invalid security token. Refresh and try again.')
+        if not expected or not hmac.compare_digest(supplied, expected):
+            abort(400, 'Invalid security token. Refresh and try again.')
 
         # Simple persistent per-IP limit: 12 POSTs per 5 minutes.
-
         ip = request.remote_addr or 'unknown'
-
         bucket = f'{ip}:{int(datetime.now().timestamp()) // 300}'
 
-        con = db(); row = con.execute('SELECT hits FROM rate_limits WHERE bucket=%s', (bucket,)).fetchone()
+        con = db()
 
-        if row and row['hits'] >= 12: abort(429, 'Too many submissions. Please wait five minutes.')
+        row = con.execute(
+            'SELECT hits FROM rate_limits WHERE bucket=%s',
+            (bucket,)
+        ).fetchone()
+
+        if row and row['hits'] >= 12:
+            abort(429, 'Too many submissions. Please wait five minutes.')
 
         con.execute(
-    'INSERT INTO rate_limits(bucket,hits,window_start) VALUES(%s,%s,%s) '
-    'ON CONFLICT(bucket) DO UPDATE SET hits = rate_limits.hits + 1',
-    (bucket, 1, int(datetime.now().timestamp())))
+            'INSERT INTO rate_limits(bucket,hits,window_start) VALUES(%s,%s,%s) '
+            'ON CONFLICT(bucket) DO UPDATE SET hits = rate_limits.hits + 1',
+            (bucket, 1, int(datetime.now().timestamp()))
+        )
 
-con.commit()
+        con.commit()
+
 
 def current_user():
 
