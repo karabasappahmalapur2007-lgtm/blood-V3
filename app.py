@@ -234,11 +234,12 @@ def protect_posts():
 
         if row and row['hits'] >= 12: abort(429, 'Too many submissions. Please wait five minutes.')
 
-        con.execute('INSERT INTO rate_limits(bucket,hits,window_start) VALUES(%s,%s,%s) ON CONFLICT(bucket) DO UPDATE SET hits=hits+1',
+        con.execute(
+    'INSERT INTO rate_limits(bucket,hits,window_start) VALUES(%s,%s,%s) '
+    'ON CONFLICT(bucket) DO UPDATE SET hits = rate_limits.hits + 1',
+    (bucket, 1, int(datetime.now().timestamp())))
 
-                    (bucket, 1, int(datetime.now().timestamp()))); con.commit()
-
-
+con.commit()
 
 def current_user():
 
